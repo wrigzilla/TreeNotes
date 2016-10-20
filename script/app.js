@@ -22,6 +22,7 @@ var TreeNotes;
         ];
         var a = new TreeNotes.Node('one', 1, b);
         var t = new TreeNotes.Tree(a);
+        t.moveNodeToNodeById(3, 13);
         var tv = new TreeNotes.TreeVisualizer(t, el);
     };
 })(TreeNotes || (TreeNotes = {}));
@@ -242,6 +243,23 @@ var TreeNotes;
         get length() {
             return this.getLength(this.rootNode, 1);
         }
+        get root() {
+            return this.rootNode;
+        }
+        removeNodeById(id) {
+            var result = this.findNode(this.rootNode, id);
+            this.removeNode(result);
+        }
+        getNodeById(id) {
+            return this.findNode(this.rootNode, id).node;
+        }
+        moveNodeToNodeById(child, newParent) {
+            var result = this.findNode(this.rootNode, child);
+            this.removeNode(result);
+            var newP = this.getNodeById(newParent);
+            newP.addChild(result.node);
+            console.log(this.rootNode);
+        }
         getLength(node, count = 0) {
             count += node.length;
             if (node.children.length > 0) {
@@ -250,17 +268,6 @@ var TreeNotes;
                 }
             }
             return count;
-        }
-        get root() {
-            return this.rootNode;
-        }
-        removeNodeById(id) {
-            var result = this.findNode(this.rootNode, id);
-            var index = result.parent.children.indexOf(result.node);
-            result.parent.children.splice(index, 1);
-        }
-        getNodeById(id) {
-            return this.findNode(this.rootNode, id).node;
         }
         findNode(node, id, parent = null) {
             var result = null;
@@ -274,6 +281,10 @@ var TreeNotes;
                 }
             }
             return result;
+        }
+        removeNode(result) {
+            var index = result.parent.children.indexOf(result.node);
+            result.parent.children.splice(index, 1);
         }
     }
     TreeNotes.Tree = Tree;

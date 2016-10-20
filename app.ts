@@ -3,10 +3,6 @@
 	window.onload = () => 
 	{
 		var el = document.getElementById('content');
-		//var editor: NodeEditor = new NodeEditor(el, new Node('steve, innit', 'asjkfhejkgehgjkejgh', 1));
-
-
-
 
 		var c = [
 			new Node('eight', 8),
@@ -31,6 +27,9 @@
 		var a: Node = new Node('one', 1, b);
 
 		var t: Tree = new Tree(a);
+
+
+		t.moveNodeToNodeById(3, 13);
 
 		var tv: TreeVisualizer = new TreeVisualizer(t, el);
 

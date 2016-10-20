@@ -20,20 +20,6 @@
 			return this.getLength(this.rootNode, 1);
 		}
 
-		private getLength(node: Node, count: number = 0): number
-		{
-			count += node.length;
-
-			if (node.children.length > 0)
-			{
-				for (var i: number = 0; i < node.children.length; i++)
-				{
-					count = this.getLength(node.children[i], count);
-				}
-			}
-			return count;
-		}
-
 		public get root(): Node
 		{
 			return this.rootNode;
@@ -42,13 +28,36 @@
 		public removeNodeById(id: number): void
 		{
 			var result: NodeSearchResult = this.findNode(this.rootNode, id);
-			var index: number = result.parent.children.indexOf(result.node);
-			result.parent.children.splice(index, 1);
+			this.removeNode(result);
 		}
 
 		public getNodeById(id: number): Node
 		{
 			return this.findNode(this.rootNode, id).node;
+		}
+
+		public moveNodeToNodeById(child: number, newParent: number): void
+		{
+			var result: NodeSearchResult = this.findNode(this.rootNode, child);
+			this.removeNode(result);
+
+			var newP: Node = this.getNodeById(newParent);
+			newP.addChild(result.node);
+
+			console.log(this.rootNode);
+		}
+
+		private getLength(node: Node, count: number = 0): number
+		{
+			count += node.length;
+			if (node.children.length > 0)
+			{
+				for (var i: number = 0; i < node.children.length; i++)
+				{
+					count = this.getLength(node.children[i], count);
+				}
+			}
+			return count;
 		}
 
 		private findNode(node: Node, id: number, parent: Node = null): NodeSearchResult
@@ -64,6 +73,12 @@
 				}
 			}
 			return result;
+		}
+
+		private removeNode(result: NodeSearchResult): void
+		{
+			var index: number = result.parent.children.indexOf(result.node);
+			result.parent.children.splice(index, 1);
 		}
 	}
 }
