@@ -6,20 +6,38 @@
 		//var editor: NodeEditor = new NodeEditor(el, new Node('steve, innit', 'asjkfhejkgehgjkejgh', 1));
 
 
-		var b = [
-			new Node('basein your face', 2),
-			new Node('basein your face', 3),
-			new Node('basein your face', 4),
-			new Node('basein your face', 5),
-			new Node('basein your face', 6),
-			new Node('basein your face', 7)
+
+
+		var c = [
+			new Node('eight', 8),
+			new Node('nine', 9),
+			new Node('ten', 10),
 		];
-		var a: Node = new Node('basein your face', 1, b);
+
+		var d = [
+			new Node('eleven', 11),
+			new Node('twelve', 12),
+			new Node('thirteen', 13),
+		];
+
+		var b = [
+			new Node('two', 2),
+			new Node('three', 3, c),
+			new Node('four', 4),
+			new Node('five', 5, d),
+			new Node('six', 6),
+			new Node('seven', 7)
+		];
+		var a: Node = new Node('one', 1, b);
 
 		var t: Tree = new Tree(a);
 
 
-		var tv: TreeVisualizer = new TreeVisualizer(t, el);
+		console.log(t.getNodeById(8));
+
+		//t.getnodeById(5);
+
+		//var tv: TreeVisualizer = new TreeVisualizer(t, el);
 
 
 	};

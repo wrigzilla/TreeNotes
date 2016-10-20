@@ -31,15 +31,18 @@
 			var data: HTMLParagraphElement = HTMLUtilities.paragraph(node.data);
 
 			var edit: HTMLLinkElement = HTMLUtilities.link('edit', '', ['link-btn']);
+			var remove: HTMLLinkElement = HTMLUtilities.link('remove', '', ['link-btn']);
 			var addChild: HTMLLinkElement = HTMLUtilities.link('add child', '', ['link-btn']);
 			var viewChildren: HTMLLinkElement = HTMLUtilities.link('view children', '', ['link-btn']);
 
-			var children: HTMLElement = HTMLUtilities.unorderedList();
+			var childClass = [];
+			if (node.open) childClass.push("open");
+			var children: HTMLElement = HTMLUtilities.unorderedList(childClass);
 			
 			var i: number = 0; var length: number = node.length;
 			while (i < length)
 			{
-				var childeNode: Node = node.childIndex(i);
+				var childeNode: Node = node.children[i];
 				if (childeNode)
 				{
 					var n: HTMLElement = this.renderNode(childeNode);
@@ -59,6 +62,10 @@
 			{
 				new NodeEditor(target, this.tree.getNodeById(id));
 			}
+			else if (target.nodeName === 'A' && target.innerHTML === 'remove')
+			{
+
+			}
 			else if (target.nodeName === 'A' && target.innerHTML === 'add child')
 			{
 
@@ -70,6 +77,8 @@
 			}
 			else if (target.nodeName === 'A' && target.innerHTML === 'view children')
 			{
+				var node = this.tree.getNodeById(id);
+				node.open = !node.open;
 				this.toggleChildren(target.parentElement);
 			}
 		}
@@ -79,8 +88,6 @@
 			e.target.removeEventListener(NodeEvent.NODE_SAVED, this.onAddChild);
 			this.parentNode.addChild(e.node);
 			this.parentNode = null;
-
-			console.log(this.tree);
 			this.renderTree();
 		}
 

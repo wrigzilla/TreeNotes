@@ -2,17 +2,27 @@ var TreeNotes;
 (function (TreeNotes) {
     window.onload = () => {
         var el = document.getElementById('content');
-        var b = [
-            new TreeNotes.Node('basein your face', 2),
-            new TreeNotes.Node('basein your face', 3),
-            new TreeNotes.Node('basein your face', 4),
-            new TreeNotes.Node('basein your face', 5),
-            new TreeNotes.Node('basein your face', 6),
-            new TreeNotes.Node('basein your face', 7)
+        var c = [
+            new TreeNotes.Node('eight', 8),
+            new TreeNotes.Node('nine', 9),
+            new TreeNotes.Node('ten', 10),
         ];
-        var a = new TreeNotes.Node('basein your face', 1, b);
+        var d = [
+            new TreeNotes.Node('eleven', 11),
+            new TreeNotes.Node('twelve', 12),
+            new TreeNotes.Node('thirteen', 13),
+        ];
+        var b = [
+            new TreeNotes.Node('two', 2),
+            new TreeNotes.Node('three', 3, c),
+            new TreeNotes.Node('four', 4),
+            new TreeNotes.Node('five', 5, d),
+            new TreeNotes.Node('six', 6),
+            new TreeNotes.Node('seven', 7)
+        ];
+        var a = new TreeNotes.Node('one', 1, b);
         var t = new TreeNotes.Tree(a);
-        var tv = new TreeNotes.TreeVisualizer(t, el);
+        console.log(t.getNodeById(8));
     };
 })(TreeNotes || (TreeNotes = {}));
 var TreeNotes;
@@ -145,36 +155,26 @@ var TreeNotes;
 var TreeNotes;
 (function (TreeNotes) {
     class Node {
-        constructor(data, _id, _children = []) {
+        constructor(data, _id, children = []) {
             this.data = data;
             this._id = _id;
-            this._children = _children;
-        }
-        static FindNodeById(element, id) {
-            return element.id === id;
+            this.children = children;
+            this.open = false;
         }
         get id() {
             return this._id;
         }
         get length() {
-            return this._children.length;
+            return this.children.length;
         }
         addChild(node) {
-            this._children.push(node);
+            this.children.push(node);
         }
         removeChild(id) {
             var i = 0;
             var length = 0;
             while (i < length) {
             }
-        }
-        find(id) {
-            return this._children.find((element) => { return Node.FindNodeById.call(this, element, id); }) || null;
-        }
-        childIndex(index) {
-            return this._children[index] || null;
-        }
-        deleteNode(node) {
         }
     }
     TreeNotes.Node = Node;
@@ -226,10 +226,19 @@ var TreeNotes;
 })(TreeNotes || (TreeNotes = {}));
 var TreeNotes;
 (function (TreeNotes) {
+    class NodeSearchResult {
+        constructor(node = null, parent = null) {
+            this.node = node;
+            this.parent = parent;
+        }
+    }
+    TreeNotes.NodeSearchResult = NodeSearchResult;
     class Tree extends TreeNotes.EventDispatcher {
         constructor(rootNode) {
             super();
             this.rootNode = rootNode;
+            this.iterator = 0;
+            this.traceNode(this.rootNode);
         }
         get length() {
             return 0;
@@ -237,14 +246,32 @@ var TreeNotes;
         get root() {
             return this.rootNode;
         }
-        addChild(node) {
-            this.rootNode.addChild(node);
-        }
         removeChildById(id) {
-            this.rootNode.removeChild(id);
+            this.getNodeById(id);
         }
         getNodeById(id) {
-            return this.rootNode.find(id);
+            return this.findNode(this.rootNode, id);
+        }
+        traceNode(node) {
+            console.log(node.id);
+            if (node.children.length > 0) {
+                for (var i = 0; i < node.children.length; i++) {
+                    this.traceNode(node.children[i]);
+                }
+            }
+        }
+        findNode(node, id) {
+            var result = null;
+            if (node.id === id)
+                return node;
+            if (node.children.length > 0) {
+                for (var i = 0; i < node.children.length; i++) {
+                    result = this.findNode(node.children[i], id);
+                    if (result)
+                        break;
+                }
+            }
+            return result;
         }
     }
     TreeNotes.Tree = Tree;
@@ -272,13 +299,17 @@ var TreeNotes;
             nodeHTML.id = 'node_' + node.id;
             var data = TreeNotes.HTMLUtilities.paragraph(node.data);
             var edit = TreeNotes.HTMLUtilities.link('edit', '', ['link-btn']);
+            var remove = TreeNotes.HTMLUtilities.link('remove', '', ['link-btn']);
             var addChild = TreeNotes.HTMLUtilities.link('add child', '', ['link-btn']);
             var viewChildren = TreeNotes.HTMLUtilities.link('view children', '', ['link-btn']);
-            var children = TreeNotes.HTMLUtilities.unorderedList();
+            var childClass = [];
+            if (node.open)
+                childClass.push("open");
+            var children = TreeNotes.HTMLUtilities.unorderedList(childClass);
             var i = 0;
             var length = node.length;
             while (i < length) {
-                var childeNode = node.childIndex(i);
+                var childeNode = node.children[i];
                 if (childeNode) {
                     var n = this.renderNode(childeNode);
                     if (n)
@@ -294,6 +325,8 @@ var TreeNotes;
             if (target.nodeName === 'A' && target.innerHTML === 'edit') {
                 new TreeNotes.NodeEditor(target, this.tree.getNodeById(id));
             }
+            else if (target.nodeName === 'A' && target.innerHTML === 'remove') {
+            }
             else if (target.nodeName === 'A' && target.innerHTML === 'add child') {
                 var newNode = new TreeNotes.Node("", ++this.iterator);
                 var editor = new TreeNotes.NodeEditor(target, newNode);
@@ -301,6 +334,8 @@ var TreeNotes;
                 editor.addEventListener(TreeNotes.NodeEvent.NODE_SAVED, this.onAddChild, this);
             }
             else if (target.nodeName === 'A' && target.innerHTML === 'view children') {
+                var node = this.tree.getNodeById(id);
+                node.open = !node.open;
                 this.toggleChildren(target.parentElement);
             }
         }
@@ -308,7 +343,6 @@ var TreeNotes;
             e.target.removeEventListener(TreeNotes.NodeEvent.NODE_SAVED, this.onAddChild);
             this.parentNode.addChild(e.node);
             this.parentNode = null;
-            console.log(this.tree);
             this.renderTree();
         }
         toggleChildren(parent) {

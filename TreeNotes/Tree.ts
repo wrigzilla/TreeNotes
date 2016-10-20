@@ -1,10 +1,20 @@
 ﻿namespace TreeNotes
 {
+	export class NodeSearchResult
+	{
+		constructor(public node: Node = null, public parent: Node = null)
+		{ }
+	}
+
 	export class Tree extends EventDispatcher
 	{
+		private iterator: number = 0;
+
 		constructor(private rootNode: Node)
 		{
 			super();
+
+			this.traceNode(this.rootNode);
 		}
 
 		public get length(): number
@@ -18,19 +28,44 @@
 			return this.rootNode;
 		}
 
-		public addChild(node: Node): void
-		{
-			this.rootNode.addChild(node);
-		}
-
 		public removeChildById(id: number): void
 		{
-			this.rootNode.removeChild(id);
+			this.getNodeById(id);
+
+
 		}
 
 		public getNodeById(id: number): Node
 		{
-			return this.rootNode.find(id);
+			return this.findNode(this.rootNode, id);
+		}
+
+		private traceNode(node: Node): void
+		{
+			console.log(node.id);
+
+			if (node.children.length > 0)
+			{
+				for (var i: number = 0; i < node.children.length; i++)
+				{
+					this.traceNode(node.children[i]);
+				}
+			}
+		}
+
+		private findNode(node: Node, id: number): Node
+		{
+			var result = null;
+			if (node.id === id) return node;
+			if (node.children.length > 0)
+			{
+				for (var i: number = 0; i < node.children.length; i++)
+				{
+					result = this.findNode(node.children[i], id);
+					if (result) break;
+				}
+			}
+			return result;
 		}
 	}
 }

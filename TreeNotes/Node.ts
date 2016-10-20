@@ -2,14 +2,11 @@
 {
 	export class Node
 	{
-		public static FindNodeById(element: Node, id: number): boolean
-		{
-			return element.id === id;
-		}
+		public open: boolean;
 
-		constructor(public data: string, private _id: number, private _children: Node[] = [])
+		constructor(public data: string, private _id: number, public children: Node[] = [])
 		{
-
+			this.open = false;
 		}
 
 		public get id(): number
@@ -19,12 +16,12 @@
 
 		public get length(): number
 		{
-			return this._children.length;
+			return this.children.length;
 		}
 
 		public addChild(node: Node): void
 		{
-			this._children.push(node);
+			this.children.push(node);
 		}
 
 		public removeChild(id: number): void
@@ -34,34 +31,6 @@
 			{
 
 			}
-		}
-
-		//public getNodeById(id: number): Node
-		//{
-		//	var result = null;
-		//	var searchRoot: Node = this;
-
-
-		//	console.log(result);
-
-		//	return null;
-		//}
-
-		public find(id: number): Node
-		{
-			return this._children.find((element: Node) => { return Node.FindNodeById.call(this, element, id) }) || null;
-		}
-
-
-		//this is ok because it only returns data and does not allow for modification
-		public childIndex(index: number): Node
-		{
-			return this._children[index] || null;
-		}
-
-		private deleteNode(node: Node): void
-		{
-
 		}
 	}
 }
