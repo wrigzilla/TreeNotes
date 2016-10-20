@@ -62,7 +62,6 @@
 			
 			if (target.value === NodeEditor.CANCEL_BTN || target.value === NodeEditor.SAVE_BTN)
 			{
-				//close pop up
 				e.currentTarget.removeEventListener('click', (e: Event) => this.onClick(e));
 				popUp.parentElement.removeChild(popUp);
 			}

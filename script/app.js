@@ -300,19 +300,20 @@ var TreeNotes;
             this.iterator = 0;
         }
         renderTree() {
-            this.renderedTree = this.renderNode(this.tree.root);
+            this.renderedTree = this.renderNode(this.tree.root, true);
             if (this.anchor.children.length > 0)
                 this.anchor.replaceChild(this.renderedTree, this.anchor.firstChild);
             else
                 this.anchor.appendChild(this.renderedTree);
             this.renderedTree.addEventListener('click', (e) => this.onTreeClicked(e));
         }
-        renderNode(node) {
+        renderNode(node, root = false) {
             var nodeHTML = TreeNotes.HTMLUtilities.listElement();
             nodeHTML.id = 'node_' + node.id;
             var data = TreeNotes.HTMLUtilities.paragraph(node.data);
             var edit = TreeNotes.HTMLUtilities.link('edit', '', ['link-btn']);
-            var remove = TreeNotes.HTMLUtilities.link('remove', '', ['link-btn']);
+            if (!root)
+                var remove = TreeNotes.HTMLUtilities.link('remove', '', ['link-btn']);
             var addChild = TreeNotes.HTMLUtilities.link('add child', '', ['link-btn']);
             var viewChildren = TreeNotes.HTMLUtilities.link('view children', '', ['link-btn']);
             var childClass = [];
@@ -330,7 +331,8 @@ var TreeNotes;
                 }
                 i++;
             }
-            return TreeNotes.HTMLUtilities.appendList(nodeHTML, [data, edit, remove, addChild, viewChildren, children]);
+            var elements = root ? [data, edit, addChild, viewChildren, children] : [data, edit, remove, addChild, viewChildren, children];
+            return TreeNotes.HTMLUtilities.appendList(nodeHTML, elements);
         }
         onTreeClicked(e) {
             var target = e.target;

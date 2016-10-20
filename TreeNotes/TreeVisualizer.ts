@@ -15,7 +15,7 @@
 
 		public renderTree(): void
 		{
-			this.renderedTree = this.renderNode(this.tree.root);
+			this.renderedTree = this.renderNode(this.tree.root, true);
 
 			if (this.anchor.children.length > 0) this.anchor.replaceChild(this.renderedTree, this.anchor.firstChild);
 			else this.anchor.appendChild(this.renderedTree);
@@ -23,7 +23,7 @@
 			this.renderedTree.addEventListener('click', (e: Event) => this.onTreeClicked(e));
 		}
 
-		private renderNode(node: Node): HTMLLIElement
+		private renderNode(node: Node, root: boolean = false): HTMLLIElement
 		{
 			var nodeHTML: HTMLLIElement = HTMLUtilities.listElement();
 			nodeHTML.id = 'node_' + node.id;
@@ -31,7 +31,7 @@
 			var data: HTMLParagraphElement = HTMLUtilities.paragraph(node.data);
 
 			var edit: HTMLLinkElement = HTMLUtilities.link('edit', '', ['link-btn']);
-			var remove: HTMLLinkElement = HTMLUtilities.link('remove', '', ['link-btn']);
+			if (!root) var remove: HTMLLinkElement = HTMLUtilities.link('remove', '', ['link-btn']);
 			var addChild: HTMLLinkElement = HTMLUtilities.link('add child', '', ['link-btn']);
 			var viewChildren: HTMLLinkElement = HTMLUtilities.link('view children', '', ['link-btn']);
 
@@ -50,7 +50,10 @@
 				}
 				i++;
 			}
-			return <HTMLLIElement>HTMLUtilities.appendList(nodeHTML, [data, edit, remove, addChild, viewChildren, children]);
+
+			var elements: HTMLElement[] = root ? [data, edit, addChild, viewChildren, children] : [data, edit, remove, addChild, viewChildren, children];
+
+			return <HTMLLIElement>HTMLUtilities.appendList(nodeHTML, elements);
 		}
 
 		private onTreeClicked(e: Event): void
@@ -69,7 +72,6 @@
 			}
 			else if (target.nodeName === 'A' && target.innerHTML === 'add child')
 			{
-
 				var newNode: Node = new Node("", ++this.iterator);
 				var editor: NodeEditor = new NodeEditor(target, newNode);
 				this.parentNode =  this.tree.getNodeById(id);
