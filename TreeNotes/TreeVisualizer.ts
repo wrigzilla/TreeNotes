@@ -50,7 +50,7 @@
 				}
 				i++;
 			}
-			return <HTMLLIElement>HTMLUtilities.appendList(nodeHTML, [data, edit, addChild, viewChildren, children]);
+			return <HTMLLIElement>HTMLUtilities.appendList(nodeHTML, [data, edit, remove, addChild, viewChildren, children]);
 		}
 
 		private onTreeClicked(e: Event): void
@@ -64,7 +64,8 @@
 			}
 			else if (target.nodeName === 'A' && target.innerHTML === 'remove')
 			{
-
+				this.tree.removeNodeById(id);
+				this.renderTree();
 			}
 			else if (target.nodeName === 'A' && target.innerHTML === 'add child')
 			{

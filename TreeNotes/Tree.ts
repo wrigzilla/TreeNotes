@@ -17,8 +17,21 @@
 
 		public get length(): number
 		{
-			//TODO count the length of children in whole tree
-			return 0;
+			return this.getLength(this.rootNode, 1);
+		}
+
+		private getLength(node: Node, count: number = 0): number
+		{
+			count += node.length;
+
+			if (node.children.length > 0)
+			{
+				for (var i: number = 0; i < node.children.length; i++)
+				{
+					count = this.getLength(node.children[i], count);
+				}
+			}
+			return count;
 		}
 
 		public get root(): Node
@@ -30,11 +43,7 @@
 		{
 			var result: NodeSearchResult = this.findNode(this.rootNode, id);
 			var index: number = result.parent.children.indexOf(result.node);
-
 			result.parent.children.splice(index, 1);
-
-
-			console.log(this.rootNode);
 		}
 
 		public getNodeById(id: number): Node

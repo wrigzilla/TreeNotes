@@ -32,16 +32,7 @@
 
 		var t: Tree = new Tree(a);
 
-
-		console.log(t.getNodeById(8));
-		t.removeNodeById(8);
-		t.removeNodeById(6);
-		t.removeNodeById(5);
-
-		//t.getnodeById(5);
-
-		//var tv: TreeVisualizer = new TreeVisualizer(t, el);
-
+		var tv: TreeVisualizer = new TreeVisualizer(t, el);
 
 	};
 }

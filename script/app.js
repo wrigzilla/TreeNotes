@@ -22,10 +22,7 @@ var TreeNotes;
         ];
         var a = new TreeNotes.Node('one', 1, b);
         var t = new TreeNotes.Tree(a);
-        console.log(t.getNodeById(8));
-        t.removeNodeById(8);
-        t.removeNodeById(6);
-        t.removeNodeById(5);
+        var tv = new TreeNotes.TreeVisualizer(t, el);
     };
 })(TreeNotes || (TreeNotes = {}));
 var TreeNotes;
@@ -243,7 +240,16 @@ var TreeNotes;
             this.iterator = 0;
         }
         get length() {
-            return 0;
+            return this.getLength(this.rootNode, 1);
+        }
+        getLength(node, count = 0) {
+            count += node.length;
+            if (node.children.length > 0) {
+                for (var i = 0; i < node.children.length; i++) {
+                    count = this.getLength(node.children[i], count);
+                }
+            }
+            return count;
         }
         get root() {
             return this.rootNode;
@@ -252,7 +258,6 @@ var TreeNotes;
             var result = this.findNode(this.rootNode, id);
             var index = result.parent.children.indexOf(result.node);
             result.parent.children.splice(index, 1);
-            console.log(this.rootNode);
         }
         getNodeById(id) {
             return this.findNode(this.rootNode, id).node;
@@ -314,7 +319,7 @@ var TreeNotes;
                 }
                 i++;
             }
-            return TreeNotes.HTMLUtilities.appendList(nodeHTML, [data, edit, addChild, viewChildren, children]);
+            return TreeNotes.HTMLUtilities.appendList(nodeHTML, [data, edit, remove, addChild, viewChildren, children]);
         }
         onTreeClicked(e) {
             var target = e.target;
@@ -323,6 +328,8 @@ var TreeNotes;
                 new TreeNotes.NodeEditor(target, this.tree.getNodeById(id));
             }
             else if (target.nodeName === 'A' && target.innerHTML === 'remove') {
+                this.tree.removeNodeById(id);
+                this.renderTree();
             }
             else if (target.nodeName === 'A' && target.innerHTML === 'add child') {
                 var newNode = new TreeNotes.Node("", ++this.iterator);
