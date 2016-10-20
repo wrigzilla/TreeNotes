@@ -23,6 +23,9 @@ var TreeNotes;
         var a = new TreeNotes.Node('one', 1, b);
         var t = new TreeNotes.Tree(a);
         console.log(t.getNodeById(8));
+        t.removeNodeById(8);
+        t.removeNodeById(6);
+        t.removeNodeById(5);
     };
 })(TreeNotes || (TreeNotes = {}));
 var TreeNotes;
@@ -238,7 +241,6 @@ var TreeNotes;
             super();
             this.rootNode = rootNode;
             this.iterator = 0;
-            this.traceNode(this.rootNode);
         }
         get length() {
             return 0;
@@ -246,27 +248,22 @@ var TreeNotes;
         get root() {
             return this.rootNode;
         }
-        removeChildById(id) {
-            this.getNodeById(id);
+        removeNodeById(id) {
+            var result = this.findNode(this.rootNode, id);
+            var index = result.parent.children.indexOf(result.node);
+            result.parent.children.splice(index, 1);
+            console.log(this.rootNode);
         }
         getNodeById(id) {
-            return this.findNode(this.rootNode, id);
+            return this.findNode(this.rootNode, id).node;
         }
-        traceNode(node) {
-            console.log(node.id);
-            if (node.children.length > 0) {
-                for (var i = 0; i < node.children.length; i++) {
-                    this.traceNode(node.children[i]);
-                }
-            }
-        }
-        findNode(node, id) {
+        findNode(node, id, parent = null) {
             var result = null;
             if (node.id === id)
-                return node;
+                return new NodeSearchResult(node, parent);
             if (node.children.length > 0) {
                 for (var i = 0; i < node.children.length; i++) {
-                    result = this.findNode(node.children[i], id);
+                    result = this.findNode(node.children[i], id, node);
                     if (result)
                         break;
                 }

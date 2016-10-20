@@ -34,6 +34,9 @@
 
 
 		console.log(t.getNodeById(8));
+		t.removeNodeById(8);
+		t.removeNodeById(6);
+		t.removeNodeById(5);
 
 		//t.getnodeById(5);
 

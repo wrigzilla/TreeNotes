@@ -13,8 +13,6 @@
 		constructor(private rootNode: Node)
 		{
 			super();
-
-			this.traceNode(this.rootNode);
 		}
 
 		public get length(): number
@@ -28,40 +26,31 @@
 			return this.rootNode;
 		}
 
-		public removeChildById(id: number): void
+		public removeNodeById(id: number): void
 		{
-			this.getNodeById(id);
+			var result: NodeSearchResult = this.findNode(this.rootNode, id);
+			var index: number = result.parent.children.indexOf(result.node);
+
+			result.parent.children.splice(index, 1);
 
 
+			console.log(this.rootNode);
 		}
 
 		public getNodeById(id: number): Node
 		{
-			return this.findNode(this.rootNode, id);
+			return this.findNode(this.rootNode, id).node;
 		}
 
-		private traceNode(node: Node): void
+		private findNode(node: Node, id: number, parent: Node = null): NodeSearchResult
 		{
-			console.log(node.id);
-
+			var result: NodeSearchResult = null;
+			if (node.id === id) return new NodeSearchResult(node, parent);
 			if (node.children.length > 0)
 			{
 				for (var i: number = 0; i < node.children.length; i++)
 				{
-					this.traceNode(node.children[i]);
-				}
-			}
-		}
-
-		private findNode(node: Node, id: number): Node
-		{
-			var result = null;
-			if (node.id === id) return node;
-			if (node.children.length > 0)
-			{
-				for (var i: number = 0; i < node.children.length; i++)
-				{
-					result = this.findNode(node.children[i], id);
+					result = this.findNode(node.children[i], id, node);
 					if (result) break;
 				}
 			}
