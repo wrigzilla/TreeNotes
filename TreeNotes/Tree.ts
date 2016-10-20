@@ -13,6 +13,29 @@
 		constructor(private rootNode: Node)
 		{
 			super();
+
+			//safety
+			//this.rootNode.id = 1;
+
+			this.fixIds(this.rootNode);
+
+			console.log(this.rootNode);
+
+
+
+			//will need to work out a nice way to allow 
+		}
+
+		private fixIds(node: Node): void
+		{
+			node.id = ++this.iterator;
+			if (node.children.length > 0)
+			{
+				for (var i: number = 0; i < node.children.length; i++)
+				{
+					this.fixIds(node.children[i]);
+				}
+			}
 		}
 
 		public get length(): number
@@ -43,8 +66,6 @@
 
 			var newP: Node = this.getNodeById(newParent);
 			newP.addChild(result.node);
-
-			console.log(this.rootNode);
 		}
 
 		private getLength(node: Node, count: number = 0): number

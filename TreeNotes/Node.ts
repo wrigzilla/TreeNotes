@@ -4,7 +4,7 @@
 	{
 		public open: boolean;
 
-		constructor(public data: string, private _id: number, public children: Node[] = [])
+		constructor(public data: string, public children: Node[] = [], private _id: number = null)
 		{
 			this.open = false;
 		}
@@ -12,6 +12,11 @@
 		public get id(): number
 		{
 			return this._id;
+		}
+
+		public set id(id: number)
+		{
+			this._id = id;
 		}
 
 		public get length(): number
@@ -22,15 +27,6 @@
 		public addChild(node: Node): void
 		{
 			this.children.push(node);
-		}
-
-		public removeChild(id: number): void
-		{
-			var i: number = 0; var length: number = 0;
-			while (i < length)
-			{
-
-			}
 		}
 	}
 }

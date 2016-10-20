@@ -3,14 +3,12 @@
 	export class TreeVisualizer
 	{
 		private renderedTree: HTMLElement;
-		private iterator: number = 0;
 
 		private parentNode: Node;
 
 		constructor(private tree: Tree, private anchor: HTMLElement)
 		{
 			this.renderTree();
-			this.iterator = 0;
 		}
 
 		public renderTree(): void
@@ -27,7 +25,6 @@
 		{
 			var nodeHTML: HTMLLIElement = HTMLUtilities.listElement();
 			nodeHTML.id = 'node_' + node.id;
-
 			var data: HTMLParagraphElement = HTMLUtilities.paragraph(node.data);
 
 			var edit: HTMLLinkElement = HTMLUtilities.link('edit', '', ['link-btn']);
@@ -50,9 +47,7 @@
 				}
 				i++;
 			}
-
 			var elements: HTMLElement[] = root ? [data, edit, addChild, viewChildren, children] : [data, edit, remove, addChild, viewChildren, children];
-
 			return <HTMLLIElement>HTMLUtilities.appendList(nodeHTML, elements);
 		}
 
@@ -63,7 +58,9 @@
 
 			if (target.nodeName === 'A' && target.innerHTML === 'edit')
 			{
-				new NodeEditor(target, this.tree.getNodeById(id));
+				var editor: NodeEditor = new NodeEditor(target.parentElement, this.tree.getNodeById(id));
+
+				editor.addEventListener(NodeEvent.NODE_SAVED, this.onEdit, this);
 			}
 			else if (target.nodeName === 'A' && target.innerHTML === 'remove')
 			{
@@ -72,8 +69,8 @@
 			}
 			else if (target.nodeName === 'A' && target.innerHTML === 'add child')
 			{
-				var newNode: Node = new Node("", ++this.iterator);
-				var editor: NodeEditor = new NodeEditor(target, newNode);
+				var newNode: Node = new Node("", [], this.tree.length + 1);
+				var editor: NodeEditor = new NodeEditor(target.parentElement, newNode);
 				this.parentNode =  this.tree.getNodeById(id);
 
 				editor.addEventListener(NodeEvent.NODE_SAVED, this.onAddChild, this);
@@ -90,8 +87,20 @@
 		{
 			e.target.removeEventListener(NodeEvent.NODE_SAVED, this.onAddChild);
 			this.parentNode.addChild(e.node);
+			this.parentNode.open = true;
 			this.parentNode = null;
 			this.renderTree();
+		}
+
+		private onEdit(e: NodeEvent): void
+		{
+			e.target.removeEventListener(NodeEvent.NODE_SAVED, this.onEdit);
+			this.renderTree();
+		}
+
+		private onClose(): void
+		{
+
 		}
 
 		private toggleChildren(parent: HTMLElement): void

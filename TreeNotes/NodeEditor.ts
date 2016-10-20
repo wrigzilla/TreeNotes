@@ -14,7 +14,7 @@
 		{
 			super();
 
-			if (!node) node = new Node('', 1);
+			if (!node) node = new Node('');
 			this.node = node;
 
 			this._textArea = HTMLUtilities.textArea(this.node.data);

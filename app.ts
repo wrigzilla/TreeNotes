@@ -5,31 +5,28 @@
 		var el = document.getElementById('content');
 
 		var c = [
-			new Node('eight', 8),
-			new Node('nine', 9),
-			new Node('ten', 10),
+			new Node('eight'),
+			new Node('nine'),
+			new Node('ten'),
 		];
 
 		var d = [
-			new Node('eleven', 11),
-			new Node('twelve', 12),
-			new Node('thirteen', 13),
+			new Node('eleven'),
+			new Node('twelve'),
+			new Node('thirteen'),
 		];
 
 		var b = [
-			new Node('two', 2),
-			new Node('three', 3, c),
-			new Node('four', 4),
-			new Node('five', 5, d),
-			new Node('six', 6),
-			new Node('seven', 7)
+			new Node('two'),
+			new Node('three', c),
+			new Node('four'),
+			new Node('five', d),
+			new Node('six'),
+			new Node('seven')
 		];
-		var a: Node = new Node('one', 1, b);
+		var a: Node = new Node('one', b);
 
 		var t: Tree = new Tree(a);
-
-
-		t.moveNodeToNodeById(3, 13);
 
 		var tv: TreeVisualizer = new TreeVisualizer(t, el);
 
