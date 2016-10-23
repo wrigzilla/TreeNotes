@@ -63,13 +63,6 @@
 			return <HTMLInputElement>HTMLUtilities.addClassList(span, classes);
 		}
 
-		public static fragment(): DocumentFragment				//REVISIT THIS TO DO
-		{
-			var frag = document.createDocumentFragment();
-			return frag;
-		}
-
-
 
 		public static appendList(element: HTMLElement, list: HTMLElement[] = []): HTMLElement
 		{

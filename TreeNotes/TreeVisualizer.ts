@@ -2,6 +2,11 @@
 {
 	export class TreeVisualizer
 	{
+		public static VIEW_CHILDREN: string = 'view children';
+		public static REMOVE: string = 'remove';
+		public static ADD_CHILD: string = 'add child';
+		public static EDIT: string = 'edit';
+
 		private renderedTree: HTMLElement;
 		private parentNode: Node;
 
@@ -26,13 +31,21 @@
 			nodeHTML.id = 'node_' + node.id;
 			var data: HTMLParagraphElement = HTMLUtilities.paragraph(node.data);
 
-			var edit: HTMLLinkElement = HTMLUtilities.link('edit', '', ['link-btn']);
-			if (!root) var remove: HTMLLinkElement = HTMLUtilities.link('remove', '', ['link-btn']);
-			var addChild: HTMLLinkElement = HTMLUtilities.link('add child', '', ['link-btn']);
+			var edit: HTMLSpanElement = HTMLUtilities.span(TreeVisualizer.EDIT, ['link-btn']);
+			edit.setAttribute("data-type", TreeVisualizer.EDIT);
+
+			if (!root)
+			{
+				var remove: HTMLSpanElement = HTMLUtilities.span(TreeVisualizer.REMOVE, ['link-btn']);
+				remove.setAttribute("data-type", TreeVisualizer.REMOVE);
+			}
+			var addChild: HTMLSpanElement = HTMLUtilities.span(TreeVisualizer.ADD_CHILD, ['link-btn']);
+			addChild.setAttribute("data-type", TreeVisualizer.ADD_CHILD);
 
 			var childClasses: string[] = ['link-btn'];
 			if (node.children.length < 1) childClasses.push('disabled');
-			var viewChildren: HTMLLinkElement = HTMLUtilities.link('view children (' + node.children.length + ')', '', childClasses);
+			var viewChildren: HTMLSpanElement = HTMLUtilities.span('view children (' + node.children.length + ')', childClasses);
+			viewChildren.setAttribute("data-type", TreeVisualizer.VIEW_CHILDREN);
 
 			var childClass = [];
 			if (node.open) childClass.push("open");
@@ -58,18 +71,20 @@
 			var target: HTMLElement = <HTMLElement>e.target;
 			var id: number = parseInt(target.parentElement.id.replace('node_', ''));
 
-			if (target.nodeName === 'A' && target.innerHTML === 'edit')
+			var dataType: string = target.dataset['type'];
+
+			if (dataType === TreeVisualizer.EDIT)
 			{
 				var editor: NodeEditor = new NodeEditor(target.parentElement, this.tree.getNodeById(id));
 
 				editor.addEventListener(NodeEvent.NODE_SAVED, this.onEdit, this);
 			}
-			else if (target.nodeName === 'A' && target.innerHTML === 'remove')
+			else if (dataType === TreeVisualizer.REMOVE)
 			{
 				this.tree.removeNodeById(id);
 				this.renderTree();
 			}
-			else if (target.nodeName === 'A' && target.innerHTML === 'add child')
+			else if (dataType === TreeVisualizer.ADD_CHILD)
 			{
 				var newNode: Node = new Node("", [], this.tree.length + 1);
 				var editor: NodeEditor = new NodeEditor(target.parentElement, newNode);
@@ -77,7 +92,7 @@
 
 				editor.addEventListener(NodeEvent.NODE_SAVED, this.onAddChild, this);
 			}
-			else if (target.nodeName === 'A' && target.innerHTML === 'view children')
+			else if (dataType === TreeVisualizer.VIEW_CHILDREN)
 			{
 				var node = this.tree.getNodeById(id);
 				node.open = !node.open;
@@ -98,11 +113,6 @@
 		{
 			e.target.removeEventListener(NodeEvent.NODE_SAVED, this.onEdit);
 			this.renderTree();
-		}
-
-		private onClose(): void
-		{
-
 		}
 
 		private toggleChildren(parent: HTMLElement): void

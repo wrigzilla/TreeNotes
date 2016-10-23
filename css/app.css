@@ -1,4 +1,15 @@
-﻿ul 
+﻿body 
+{
+	font-family: "Lucida Console", "Lucida Sans Typewriter", monaco, "Bitstream Vera Sans Mono", monospace;
+	font-size: 14px;
+	font-weight: 100;
+	font-style: normal;
+	font-variant: normal;
+
+	background-color:#caccce;
+}
+
+ul 
 {
 	display:none;
 }
@@ -13,15 +24,33 @@ li.open ul
 	display:block;
 }
 
+li 
+{
+	background-color: #fff;
+}
+
+
+
 a.disabled 
 {
 	pointer-events: none;
 }
 
 
-a.link-btn
+span.link-btn.disabled
 {
-	color:#551a8b;
+	pointer-events: none;
+	cursor:auto;
+	color:#351d4a;
+	font-style: initial;
+}
+
+span.link-btn
+{
+	color:#216fed;
 	cursor:pointer;
-	padding-right: 10px; 
+	padding-right: 10px;
+	font-style: italic;
+    font-weight: 400;
+    font-size: 0.7em;
 }

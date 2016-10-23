@@ -138,10 +138,6 @@ var TreeNotes;
             span.innerHTML = text;
             return HTMLUtilities.addClassList(span, classes);
         }
-        static fragment() {
-            var frag = document.createDocumentFragment();
-            return frag;
-        }
         static appendList(element, list = []) {
             while (list.length > 0) {
                 element.appendChild(list.shift());
@@ -336,14 +332,19 @@ var TreeNotes;
             var nodeHTML = TreeNotes.HTMLUtilities.listElement();
             nodeHTML.id = 'node_' + node.id;
             var data = TreeNotes.HTMLUtilities.paragraph(node.data);
-            var edit = TreeNotes.HTMLUtilities.link('edit', '', ['link-btn']);
-            if (!root)
-                var remove = TreeNotes.HTMLUtilities.link('remove', '', ['link-btn']);
-            var addChild = TreeNotes.HTMLUtilities.link('add child', '', ['link-btn']);
+            var edit = TreeNotes.HTMLUtilities.span(TreeVisualizer.EDIT, ['link-btn']);
+            edit.setAttribute("data-type", TreeVisualizer.EDIT);
+            if (!root) {
+                var remove = TreeNotes.HTMLUtilities.span(TreeVisualizer.REMOVE, ['link-btn']);
+                remove.setAttribute("data-type", TreeVisualizer.REMOVE);
+            }
+            var addChild = TreeNotes.HTMLUtilities.span(TreeVisualizer.ADD_CHILD, ['link-btn']);
+            addChild.setAttribute("data-type", TreeVisualizer.ADD_CHILD);
             var childClasses = ['link-btn'];
             if (node.children.length < 1)
                 childClasses.push('disabled');
-            var viewChildren = TreeNotes.HTMLUtilities.link('view children (' + node.children.length + ')', '', childClasses);
+            var viewChildren = TreeNotes.HTMLUtilities.span('view children (' + node.children.length + ')', childClasses);
+            viewChildren.setAttribute("data-type", TreeVisualizer.VIEW_CHILDREN);
             var childClass = [];
             if (node.open)
                 childClass.push("open");
@@ -365,21 +366,22 @@ var TreeNotes;
         onTreeClicked(e) {
             var target = e.target;
             var id = parseInt(target.parentElement.id.replace('node_', ''));
-            if (target.nodeName === 'A' && target.innerHTML === 'edit') {
+            var dataType = target.dataset['type'];
+            if (dataType === TreeVisualizer.EDIT) {
                 var editor = new TreeNotes.NodeEditor(target.parentElement, this.tree.getNodeById(id));
                 editor.addEventListener(TreeNotes.NodeEvent.NODE_SAVED, this.onEdit, this);
             }
-            else if (target.nodeName === 'A' && target.innerHTML === 'remove') {
+            else if (dataType === TreeVisualizer.REMOVE) {
                 this.tree.removeNodeById(id);
                 this.renderTree();
             }
-            else if (target.nodeName === 'A' && target.innerHTML === 'add child') {
+            else if (dataType === TreeVisualizer.ADD_CHILD) {
                 var newNode = new TreeNotes.Node("", [], this.tree.length + 1);
                 var editor = new TreeNotes.NodeEditor(target.parentElement, newNode);
                 this.parentNode = this.tree.getNodeById(id);
                 editor.addEventListener(TreeNotes.NodeEvent.NODE_SAVED, this.onAddChild, this);
             }
-            else if (target.nodeName === 'A' && target.innerHTML === 'view children') {
+            else if (dataType === TreeVisualizer.VIEW_CHILDREN) {
                 var node = this.tree.getNodeById(id);
                 node.open = !node.open;
                 this.toggleChildren(target.parentElement);
@@ -396,11 +398,13 @@ var TreeNotes;
             e.target.removeEventListener(TreeNotes.NodeEvent.NODE_SAVED, this.onEdit);
             this.renderTree();
         }
-        onClose() {
-        }
         toggleChildren(parent) {
             parent.className.includes('open') ? parent.className = parent.className.replace('open', '') : parent.className += ' open';
         }
     }
+    TreeVisualizer.VIEW_CHILDREN = 'view children';
+    TreeVisualizer.REMOVE = 'remove';
+    TreeVisualizer.ADD_CHILD = 'add child';
+    TreeVisualizer.EDIT = 'edit';
     TreeNotes.TreeVisualizer = TreeVisualizer;
 })(TreeNotes || (TreeNotes = {}));
