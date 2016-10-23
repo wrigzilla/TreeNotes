@@ -10,32 +10,13 @@
 	{
 		private iterator: number = 0;
 
-		constructor(private rootNode: Node)
+		constructor(private rootNode: Node = null)
 		{
 			super();
 
-			//safety
-			//this.rootNode.id = 1;
+			if (!this.rootNode) this.rootNode = new Node("", [], 1);
 
 			this.fixIds(this.rootNode);
-
-			console.log(this.rootNode);
-
-
-
-			//will need to work out a nice way to allow 
-		}
-
-		private fixIds(node: Node): void
-		{
-			node.id = ++this.iterator;
-			if (node.children.length > 0)
-			{
-				for (var i: number = 0; i < node.children.length; i++)
-				{
-					this.fixIds(node.children[i]);
-				}
-			}
 		}
 
 		public get length(): number
@@ -66,6 +47,26 @@
 
 			var newP: Node = this.getNodeById(newParent);
 			newP.addChild(result.node);
+		}
+
+		public toJSON(): JSON
+		{
+			var result: any = {};
+
+			result = this.rootNode.toJSON();
+			return <JSON>result || null;
+		}
+
+		private fixIds(node: Node): void
+		{
+			node.id = ++this.iterator;
+			if (node.children.length > 0)
+			{
+				for (var i: number = 0; i < node.children.length; i++)
+				{
+					this.fixIds(node.children[i]);
+				}
+			}
 		}
 
 		private getLength(node: Node, count: number = 0): number

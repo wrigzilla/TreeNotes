@@ -3,7 +3,6 @@
 	export class TreeVisualizer
 	{
 		private renderedTree: HTMLElement;
-
 		private parentNode: Node;
 
 		constructor(private tree: Tree, private anchor: HTMLElement)
@@ -30,7 +29,10 @@
 			var edit: HTMLLinkElement = HTMLUtilities.link('edit', '', ['link-btn']);
 			if (!root) var remove: HTMLLinkElement = HTMLUtilities.link('remove', '', ['link-btn']);
 			var addChild: HTMLLinkElement = HTMLUtilities.link('add child', '', ['link-btn']);
-			var viewChildren: HTMLLinkElement = HTMLUtilities.link('view children', '', ['link-btn']);
+
+			var childClasses: string[] = ['link-btn'];
+			if (node.children.length < 1) childClasses.push('disabled');
+			var viewChildren: HTMLLinkElement = HTMLUtilities.link('view children (' + node.children.length + ')', '', childClasses);
 
 			var childClass = [];
 			if (node.open) childClass.push("open");

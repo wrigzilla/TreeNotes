@@ -138,6 +138,10 @@ var TreeNotes;
             span.innerHTML = text;
             return HTMLUtilities.addClassList(span, classes);
         }
+        static fragment() {
+            var frag = document.createDocumentFragment();
+            return frag;
+        }
         static appendList(element, list = []) {
             while (list.length > 0) {
                 element.appendChild(list.shift());
@@ -172,6 +176,18 @@ var TreeNotes;
         }
         addChild(node) {
             this.children.push(node);
+        }
+        toJSON() {
+            var result = {};
+            result.data = this.data;
+            result.id = this._id;
+            result.children = [];
+            var i = 0;
+            while (i < this.children.length) {
+                result.children.push(this.children[i].toJSON());
+                i++;
+            }
+            return result;
         }
     }
     TreeNotes.Node = Node;
@@ -231,20 +247,13 @@ var TreeNotes;
     }
     TreeNotes.NodeSearchResult = NodeSearchResult;
     class Tree extends TreeNotes.EventDispatcher {
-        constructor(rootNode) {
+        constructor(rootNode = null) {
             super();
             this.rootNode = rootNode;
             this.iterator = 0;
+            if (!this.rootNode)
+                this.rootNode = new TreeNotes.Node("", [], 1);
             this.fixIds(this.rootNode);
-            console.log(this.rootNode);
-        }
-        fixIds(node) {
-            node.id = ++this.iterator;
-            if (node.children.length > 0) {
-                for (var i = 0; i < node.children.length; i++) {
-                    this.fixIds(node.children[i]);
-                }
-            }
         }
         get length() {
             return this.getLength(this.rootNode, 1);
@@ -264,6 +273,19 @@ var TreeNotes;
             this.removeNode(result);
             var newP = this.getNodeById(newParent);
             newP.addChild(result.node);
+        }
+        toJSON() {
+            var result = {};
+            result = this.rootNode.toJSON();
+            return result || null;
+        }
+        fixIds(node) {
+            node.id = ++this.iterator;
+            if (node.children.length > 0) {
+                for (var i = 0; i < node.children.length; i++) {
+                    this.fixIds(node.children[i]);
+                }
+            }
         }
         getLength(node, count = 0) {
             count += node.length;
@@ -318,7 +340,10 @@ var TreeNotes;
             if (!root)
                 var remove = TreeNotes.HTMLUtilities.link('remove', '', ['link-btn']);
             var addChild = TreeNotes.HTMLUtilities.link('add child', '', ['link-btn']);
-            var viewChildren = TreeNotes.HTMLUtilities.link('view children', '', ['link-btn']);
+            var childClasses = ['link-btn'];
+            if (node.children.length < 1)
+                childClasses.push('disabled');
+            var viewChildren = TreeNotes.HTMLUtilities.link('view children (' + node.children.length + ')', '', childClasses);
             var childClass = [];
             if (node.open)
                 childClass.push("open");
