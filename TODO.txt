@@ -1,6 +1,0 @@
-Things To Do
-
-- Make a working node traversal thingy for removing and finding
-- Make the css work for children and hiding etc
-- Need to properly make the find node by id thingy
-- node ids!!!!!!

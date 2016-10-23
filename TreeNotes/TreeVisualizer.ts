@@ -17,17 +17,27 @@
 
 		public renderTree(): void
 		{
-			this.renderedTree = this.renderNode(this.tree.root, true);
+			var tree: HTMLLIElement = this.renderNode(this.tree.root, true);
+			this.renderedTree = HTMLUtilities.unorderedList(['tree']);
+			this.renderedTree.appendChild(tree);
 
-			if (this.anchor.children.length > 0) this.anchor.replaceChild(this.renderedTree, this.anchor.firstChild);
-			else this.anchor.appendChild(this.renderedTree);
-
+			if (this.anchor.children.length > 0)
+			{
+				this.anchor.replaceChild(this.renderedTree, this.anchor.firstChild);
+			}
+			else
+			{
+				this.anchor.appendChild(this.renderedTree);
+			}
 			this.renderedTree.addEventListener('click', (e: Event) => this.onTreeClicked(e));
 		}
 
 		private renderNode(node: Node, root: boolean = false): HTMLLIElement
 		{
-			var nodeHTML: HTMLLIElement = HTMLUtilities.listElement();
+			var childClass = [];
+			if (node.open) childClass.push("open");
+
+			var nodeHTML: HTMLLIElement = HTMLUtilities.listElement(childClass);
 			nodeHTML.id = 'node_' + node.id;
 			var data: HTMLParagraphElement = HTMLUtilities.paragraph(node.data);
 
@@ -47,9 +57,7 @@
 			var viewChildren: HTMLSpanElement = HTMLUtilities.span('view children (' + node.children.length + ')', childClasses);
 			viewChildren.setAttribute("data-type", TreeVisualizer.VIEW_CHILDREN);
 
-			var childClass = [];
-			if (node.open) childClass.push("open");
-			var children: HTMLElement = HTMLUtilities.unorderedList(childClass);
+			var children: HTMLElement = HTMLUtilities.unorderedList();
 			
 			var i: number = 0; var length: number = node.length;
 			while (i < length)
@@ -76,7 +84,6 @@
 			if (dataType === TreeVisualizer.EDIT)
 			{
 				var editor: NodeEditor = new NodeEditor(target.parentElement, this.tree.getNodeById(id));
-
 				editor.addEventListener(NodeEvent.NODE_SAVED, this.onEdit, this);
 			}
 			else if (dataType === TreeVisualizer.REMOVE)
@@ -102,6 +109,7 @@
 
 		private onAddChild(e: NodeEvent): void
 		{
+			console.log(this.tree);
 			e.target.removeEventListener(NodeEvent.NODE_SAVED, this.onAddChild);
 			this.parentNode.addChild(e.node);
 			this.parentNode.open = true;

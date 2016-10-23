@@ -52,7 +52,6 @@
 		public toJSON(): JSON
 		{
 			var result: any = {};
-
 			result = this.rootNode.toJSON();
 			return <JSON>result || null;
 		}

@@ -203,7 +203,7 @@ var TreeNotes;
             TreeNotes.HTMLUtilities.appendList(btns, [this._submit, this._cancel]);
             var editor = TreeNotes.HTMLUtilities.div();
             TreeNotes.HTMLUtilities.appendList(editor, [this._textArea, btns]);
-            TreeNotes.HTMLUtilities.appendList(anchor, [editor]);
+            anchor.insertBefore(editor, anchor.lastChild);
             editor.addEventListener('click', (e) => this.onClick(e));
         }
         get submit() {
@@ -321,15 +321,22 @@ var TreeNotes;
             this.renderTree();
         }
         renderTree() {
-            this.renderedTree = this.renderNode(this.tree.root, true);
-            if (this.anchor.children.length > 0)
+            var tree = this.renderNode(this.tree.root, true);
+            this.renderedTree = TreeNotes.HTMLUtilities.unorderedList(['tree']);
+            this.renderedTree.appendChild(tree);
+            if (this.anchor.children.length > 0) {
                 this.anchor.replaceChild(this.renderedTree, this.anchor.firstChild);
-            else
+            }
+            else {
                 this.anchor.appendChild(this.renderedTree);
+            }
             this.renderedTree.addEventListener('click', (e) => this.onTreeClicked(e));
         }
         renderNode(node, root = false) {
-            var nodeHTML = TreeNotes.HTMLUtilities.listElement();
+            var childClass = [];
+            if (node.open)
+                childClass.push("open");
+            var nodeHTML = TreeNotes.HTMLUtilities.listElement(childClass);
             nodeHTML.id = 'node_' + node.id;
             var data = TreeNotes.HTMLUtilities.paragraph(node.data);
             var edit = TreeNotes.HTMLUtilities.span(TreeVisualizer.EDIT, ['link-btn']);
@@ -345,10 +352,7 @@ var TreeNotes;
                 childClasses.push('disabled');
             var viewChildren = TreeNotes.HTMLUtilities.span('view children (' + node.children.length + ')', childClasses);
             viewChildren.setAttribute("data-type", TreeVisualizer.VIEW_CHILDREN);
-            var childClass = [];
-            if (node.open)
-                childClass.push("open");
-            var children = TreeNotes.HTMLUtilities.unorderedList(childClass);
+            var children = TreeNotes.HTMLUtilities.unorderedList();
             var i = 0;
             var length = node.length;
             while (i < length) {
@@ -388,6 +392,7 @@ var TreeNotes;
             }
         }
         onAddChild(e) {
+            console.log(this.tree);
             e.target.removeEventListener(TreeNotes.NodeEvent.NODE_SAVED, this.onAddChild);
             this.parentNode.addChild(e.node);
             this.parentNode.open = true;

@@ -27,7 +27,8 @@
 			var editor: HTMLElement = HTMLUtilities.div();
 
 			HTMLUtilities.appendList(editor, [this._textArea, btns]);
-			HTMLUtilities.appendList(anchor, [editor]);
+
+			anchor.insertBefore(editor, anchor.lastChild);
 
 			editor.addEventListener('click', (e: Event) => this.onClick(e));
 		}

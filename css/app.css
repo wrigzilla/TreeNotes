@@ -9,26 +9,43 @@
 	background-color:#caccce;
 }
 
+.tree
+{
+	max-width: 70%;
+	margin: 0 auto;
+}
+
 ul 
 {
-	display:none;
+	list-style: none;
 }
+
 
 ul.open 
 {
 	display:block;
 }
 
-li.open ul 
+li > ul
+{
+	display:none;
+}
+
+li.open > ul
 {
 	display:block;
 }
 
-li 
+li > p
 {
 	background-color: #fff;
+	padding: 8px;
 }
 
+li > span:first-of-type
+{
+	margin-left: 20px;
+}
 
 
 a.disabled 
@@ -53,4 +70,17 @@ span.link-btn
 	font-style: italic;
     font-weight: 400;
     font-size: 0.7em;
+}
+
+
+div > textarea
+{
+    margin: 0px;
+    height: 200px;
+    width: 800px;
+}
+
+li > div
+{
+	margin-left: 20px;
 }
